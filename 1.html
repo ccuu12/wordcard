@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #1e2b58; 
+        }
+
+        .container { max-width: 800px; padding: 40px; }
+        h1 { font-size: 4rem; margin: 0; font-weight: normal; }
+        .part-of-speech { font-size: 1.5rem; font-style: italic; margin-bottom: 10px; display: block; }
+        .definition { font-size: 2rem; line-height: 1.2; margin-bottom: 20px; font-weight: bold; }
+        .zh-term { font-size: 2rem; font-weight: bold; color: #4a90e2; display: block; }
+        .zh-definition { font-size: 1.8rem; font-weight: bold; line-height: 1.4; margin-bottom: 20px; }
+        .copyright { font-size: 1.2rem; font-weight: bold; }
+
+        /* --- 速度調整位置 1 --- */
+        .char {
+            display: inline-block;
+            white-space: pre;
+            /* 這裡控制平滑度：0.1s 代表移動過程極快 */
+            transition: transform 0.1s ease-in-out; 
+            vertical-align: middle;
+        }
+
+        .mirror { transform: scaleX(-1); }
+    </style>
+</head>
+<body>
+
+<div class="container" id="text-container">
+    <h1>learning disability</h1>
+    <span class="part-of-speech">noun</span>
+    <div class="definition">one of many conditions that can have an effect on someone's ability to learn easily</div>
+    <span class="zh-term">學習障礙</span>
+    <div class="zh-definition">是眾多可能影響個體學習效率與學習歷程的狀況之一。</div>
+    <div class="copyright">© Cambridge University Press</div>
+</div>
+
+<script>
+    const container = document.getElementById('text-container');
+
+    function wrapCharacters(element) {
+        element.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent;
+                if (text.replace(/\s/g, '').length > 0 || text.includes(' ')) {
+                    const chars = text.split('').map(char => `<span class="char">${char}</span>`).join('');
+                    const tempSpan = document.createElement('span');
+                    tempSpan.innerHTML = chars;
+                    node.parentNode.replaceChild(tempSpan, node);
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                wrapCharacters(node);
+            }
+        });
+    }
+
+    wrapCharacters(container);
+    const charSpans = document.querySelectorAll('.char');
+
+    function updateText() {
+        charSpans.forEach(span => {
+            if (span.textContent.trim() === "") return;
+
+            // 增加觸發機率 (0.5)，讓畫面更混亂
+            if (Math.random() > 0.5) {
+                const x = (Math.random() - 0.5) * 8; 
+                const y = (Math.random() - 0.5) * 8; 
+
+                if (Math.random() > 0.8) {
+                    span.classList.toggle('mirror');
+                }
+
+                let transformStr = `translate(${x}px, ${y}px)`;
+                if (span.classList.contains('mirror')) {
+                    transformStr += " scaleX(-1)";
+                }
+                span.style.transform = transformStr;
+            }
+        });
+    }
+
+    /* --- 速度調整位置 2 --- */
+    // 這裡控制頻率：100 代表每 0.1 秒就跳動一次（原本是 300）
+    setInterval(updateText, 100); 
+</script>
+</body>
+</html>
